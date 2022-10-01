@@ -1,0 +1,8 @@
+textarea {
+    min-height: 400px;
+}
+
+.email {
+    background-color: rgb(219, 214, 214);
+    border: 4mm ridge rgba(31, 19, 77, 0.6);
+}
