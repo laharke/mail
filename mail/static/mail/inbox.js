@@ -82,6 +82,13 @@ function show_email(email, mailbox) {
   const emailDiv = document.createElement('div');
   emailDiv.className = 'email row'
 
+  fetch('/emails/1', {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+
   // Creo el primer Div para mostrar quien envio el email y le asigno la col
   const senderDiv = document.createElement('div');
   senderDiv.className = 'col';
@@ -99,8 +106,15 @@ function show_email(email, mailbox) {
    fechaDiv.className = 'col';
    fechaDiv.innerHTML = email.timestamp;
    emailDiv.append(fechaDiv);
+   if (email.read == true) {
+    emailDiv.style.backgroundColor = "white";
+    console.log("white")
+  }
+  if (email.read == false) {
+    emailDiv.style.backgroundColor = "black";
+    console.log("black")
+  }
 
-  
   const emailsView = document.querySelector('#emails-view');
   emailsView.append(emailDiv);
 
