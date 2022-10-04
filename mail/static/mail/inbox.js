@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
   
-  
+  document.querySelector('form').onsubmit = send_email;
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -32,25 +32,19 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
-  console.log('asfdas')
+  
   //Load the mailbox with INBOX, tecnicamente yo tendria uqe cmbiar el /inbox por /<str>:mailbox asi me lo llena con inbox arvhiced o sent.
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
   .then(emails => {
-      // Print emails
-      console.log(emails);
-      console.log('asfdas')
-      emails.forEach(email => { 
-        show_email(email, mailbox);
-      });
-      // ... do something else with emails ...
+    console.log(emails);
+      emails.forEach(email => show_email(email, mailbox));
 });
 }
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelector('#compose-form').onsubmit = () => {
+function send_email() {
     // aca lelgo si ponene submit
     //agarro los values del form para enviarlos a la API
     let recipientsValue = document.querySelector('#compose-recipients').value;
@@ -72,22 +66,20 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(result => {
         // Print result
         console.log(result);
+        localStorage.clear();
+        load_mailbox('sent');
     });
-  }
-});
+
+    
+    return false;
+}
+
 
 function show_email(email, mailbox) {
 
   // Create the div que abarca los bordes y toda la info, la row, despues creo las tres col para mostrar: quien envio el email, Subject y timestamp (despues agregar para archivar)
   const emailDiv = document.createElement('div');
   emailDiv.className = 'email row'
-
-  fetch('/emails/1', {
-    method: 'PUT',
-    body: JSON.stringify({
-        read: true
-    })
-  })
 
   // Creo el primer Div para mostrar quien envio el email y le asigno la col
   const senderDiv = document.createElement('div');
@@ -108,11 +100,9 @@ function show_email(email, mailbox) {
    emailDiv.append(fechaDiv);
    if (email.read == true) {
     emailDiv.style.backgroundColor = "white";
-    console.log("white")
   }
   if (email.read == false) {
-    emailDiv.style.backgroundColor = "black";
-    console.log("black")
+    emailDiv.style.backgroundColor = "grey";
   }
 
   const emailsView = document.querySelector('#emails-view');
