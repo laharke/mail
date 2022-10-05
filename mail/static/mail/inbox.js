@@ -108,5 +108,20 @@ function show_email(email, mailbox) {
   const emailsView = document.querySelector('#emails-view');
   emailsView.append(emailDiv);
 
-
+  //Deberia agregar un even listener a cada elemento que cree que si hacen click llamo ala funcion displayemail
+  senderDiv.addEventListener('click', () => display_email(email.id));
+  subjectDiv.addEventListener('click', () => display_email(email.id));
+  fechaDiv.addEventListener('click', () => display_email(email.id));
 };
+
+function display_email(id) {
+  console.log(id)
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => {
+    // Print email
+    console.log(email);
+    
+    // ... do something else with email ...
+  });
+}
