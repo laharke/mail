@@ -4,6 +4,24 @@ textarea {
 
 .email {
     
-    border: 4mm ridge rgba(31, 19, 77, 0.6);
+    border: 2mm ridge #b5ead6;
 }
 
+.info-div{
+    border: 1mm ridge #ffb8b1;
+    margin-top: 2px;
+}
+
+.info-div2{
+    border-right: dashed thin black;
+}
+
+.email-display {
+    margin-top: 2px;
+    border: thick double #a3e1dc;
+    width: 100%;
+}
+
+body {
+    background-color: beige;
+}

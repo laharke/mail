@@ -17,6 +17,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#display-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -29,7 +30,8 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
-
+  document.querySelector('#display-view').style.display = 'none';
+  
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
   
@@ -98,12 +100,17 @@ function show_email(email, mailbox) {
    fechaDiv.className = 'col';
    fechaDiv.innerHTML = email.timestamp;
    emailDiv.append(fechaDiv);
+
+   // Le pongo el color al backgroudn segun si esta read o unread
    if (email.read == true) {
     emailDiv.style.backgroundColor = "white";
   }
   if (email.read == false) {
-    emailDiv.style.backgroundColor = "grey";
+    emailDiv.style.backgroundColor = "Silver";
   }
+
+  // Agrego el Archive o Unarchive button
+
 
   const emailsView = document.querySelector('#emails-view');
   emailsView.append(emailDiv);
@@ -115,13 +122,33 @@ function show_email(email, mailbox) {
 };
 
 function display_email(id) {
-  console.log(id)
+  //Setting the other views to none and the new one to block
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#display-view').style.display = 'block';
+
+  //fetching the requested email and populating all the campos
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
     // Print email
-    console.log(email);
     
-    // ... do something else with email ...
+    document.querySelector('#from').innerHTML = email.sender;
+    document.querySelector('#to').innerHTML = email.recipients;
+    document.querySelector('#subject').innerHTML = email.subject;
+    document.querySelector('#date').innerHTML = email.timestamp;
+    document.querySelector('#textarea').innerHTML = email.body;
+
+    //mark as read if its not alredy
+    if (email.read == false){
+      fetch(`/emails/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            read: true
+        })
+      })
+    }
+    console.log(email)
   });
+  
 }
