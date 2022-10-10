@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
   
   document.querySelector('form').onsubmit = send_email;
-
+  
   // By default, load the inbox
   load_mailbox('inbox');
 });
@@ -103,13 +103,23 @@ function show_email(email, mailbox) {
 
    // Le pongo el color al backgroudn segun si esta read o unread
    if (email.read == true) {
-    emailDiv.style.backgroundColor = "white";
-  }
-  if (email.read == false) {
     emailDiv.style.backgroundColor = "Silver";
   }
+  if (email.read == false) {
+    emailDiv.style.backgroundColor = "white";
+  }
 
-  // Agrego el Archive o Unarchive button
+  // Agrego el Archive o Unarchive button solo si no es SEND
+  if (mailbox == 'inbox' || mailbox == 'archive'){
+    const archiveDiv = document.createElement('div');
+    const archiveImg = document.createElement('img');
+    archiveDiv.className = 'col-1';
+    archiveImg.src = "../../static/archive.svg";
+    archiveDiv.append(archiveImg);
+    emailDiv.append(archiveDiv);
+    archiveImg.addEventListener('click', () => archive_email(email.id, mailbox));
+  };
+
 
 
   const emailsView = document.querySelector('#emails-view');
@@ -119,6 +129,10 @@ function show_email(email, mailbox) {
   senderDiv.addEventListener('click', () => display_email(email.id));
   subjectDiv.addEventListener('click', () => display_email(email.id));
   fechaDiv.addEventListener('click', () => display_email(email.id));
+  // SETTEAR TODO PARA QUE SE PUEDA RESPONDER UN EMAIL
+  
+  const esteBotton = document.querySelector('#button');
+  console.log(esteBotton);
 };
 
 function display_email(id) {
@@ -139,6 +153,7 @@ function display_email(id) {
     document.querySelector('#date').innerHTML = email.timestamp;
     document.querySelector('#textarea').innerHTML = email.body;
 
+    document.querySelector('#button').addEventListener('click', () => reply_email(email));
     //mark as read if its not alredy
     if (email.read == false){
       fetch(`/emails/${id}`, {
@@ -152,3 +167,47 @@ function display_email(id) {
   });
   
 }
+
+function archive_email(id, mailbox){
+  // si llego del mailbox INBOX, tengo que ARCHIVAR, si llego del mailbox ARCHIVED, tengo que desarchviar
+  if (mailbox == 'inbox'){
+    fetch(`/emails/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+          archived: true
+      })
+    });
+
+  }
+  //caso que venga de archived
+  if (mailbox == 'archive'){
+    fetch(`/emails/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+          archived: false
+      })
+    });
+  }
+  load_mailbox('inbox');
+  window.location.reload();
+}
+
+function reply_email(email) {
+  console.log('estamos aca perro');
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#display-view').style.display = 'none';
+  document.querySelector('#compose-recipients').value = email.sender;
+  
+  let sub = email.subject.slice(0,3);
+  if (sub == 'Re:') {
+    document.querySelector('#compose-subject').value = `${email.subject}`;
+  }
+  else {
+    document.querySelector('#compose-subject').value = `Re: ${email.subject}`;
+  }
+  
+
+  document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} Wrote: \n ${email.body}`;
+
+};

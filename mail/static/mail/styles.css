@@ -13,7 +13,7 @@ textarea {
 }
 
 .info-div2{
-    border-right: dashed thin black;
+    border-right: dashed thin #ffb8b1;
 }
 
 .email-display {
@@ -24,4 +24,9 @@ textarea {
 
 body {
     background-color: beige;
+}
+
+.reply{
+    display: flex;
+    justify-content: center;
 }
